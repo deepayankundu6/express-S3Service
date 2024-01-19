@@ -5,5 +5,5 @@ const server = http.createServer(app);
 
 server.listen(PORT, (err) => {
     if (err) console.log("opps some error occured while setting up the server!!!");
-    console.log(`Serverl listening on port ${PORT}`);
+    console.log(`Server listening on port ${PORT}`);
 })

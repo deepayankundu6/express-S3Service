@@ -1,6 +1,4 @@
 const express = require("express");
-const cookieParser = require('cookie-parser')
-const bodyParser = require('body-parser')
 const multer = require("multer");
 const { saveToS3 } = require("./awsS3")
 
@@ -12,10 +10,8 @@ const initialize = () => {
 }
 
 const app = express();
-app.use(cookieParser())
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(bodyParser.json())
 
 app.get("/health", (req, res) => {
     console.log("API is Ok");
@@ -33,18 +29,26 @@ app.post("/health", (req, res) => {
     })
 });
 
-app.put("/file/upload", initialize().single("FILE"), async (req, res) => {
+app.put("/file/upload", initialize().single("file"), async (req, res) => {
     console.log("Received a file: " + req.file.originalname);
     const response = await saveToS3(process.env.BUCKET_NAME, req.file)
     res.status(response.status).send(response);
 });
 
-app.put("/files/upload", initialize().array("FILE", 5), (req, res) => {
-    console.log("Received a files: " + req.files.length);
-    res.send({
-        status: "Ok"
+app.put("/files/upload", initialize().array("files", 25), async (req, res) => {
+    console.log("Received files: " + req.files.reduce((prev, next) => `${prev.originalname} , ${next.originalname}`))
+    let respArr = [];
+    for (let file of req.files) {
+        let resp = await saveToS3(process.env.BUCKET_NAME, file);
+        respArr.push(resp);
+    }
+    let status = respArr.every((ell) => ell.status === 200) ? 200 : 500;
+    let message = status === 200 ? "all files uploaded successfully" : "Oops some error occured while uploading some files";
+
+    res.status(status).send({
+        status: status,
+        message: message
     })
 });
-
 
 module.exports = app;
