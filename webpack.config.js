@@ -1,9 +1,14 @@
 const slsw = require('serverless-webpack');
 const nodeExternal = require('webpack-node-externals');
+const path = require("path");
 
 module.exports = {
-    entry: slsw.lib.entries,
     target: 'node',
-    // mode: 'production',
+    mode: 'production',
+    entry: "./lambda.js",
+    output:  {
+        path: path.resolve(__dirname, ".build"),
+        filename: "index.js"
+      },
     externals: [nodeExternal()]
 }
