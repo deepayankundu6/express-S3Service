@@ -5,7 +5,7 @@ const saveToS3 = async (bucketName, File) => {
     // Set the parameters for the file you want to upload
     const params = {
         Bucket: bucketName,
-        Key: File.originalname,
+        Key: `my-uploads/${File.originalname}`,
         Body: File.buffer
     };
     let response = {
@@ -36,11 +36,9 @@ const saveToS3 = async (bucketName, File) => {
             message: "Unable to uplaod file into S3",
             error: error.message
         }
-        return response;
+
     }
-
-
-
+    return response;
 }
 
 module.exports = { saveToS3 };
