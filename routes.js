@@ -2,6 +2,7 @@ const express = require("express");
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 const multer = require("multer");
+const { saveToS3 } = require("./awsS3")
 
 const initialize = () => {
     const storage = multer.memoryStorage();
@@ -32,8 +33,9 @@ app.post("/health", (req, res) => {
     })
 });
 
-app.put("/file/upload", initialize().single("FILE"), (req, res) => {
-    console.log("Received a file: " + req.file);
+app.put("/file/upload", initialize().single("FILE"), async (req, res) => {
+    console.log("Received a file: " + req.file.originalname);
+    const response = saveToS3(process.env.BUCKET_NAME, req.file)
     res.send({
         status: "Ok"
     })
