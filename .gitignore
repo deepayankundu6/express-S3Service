@@ -6,4 +6,5 @@ jspm_packages
 .serverless
 .vscode
 .build
+.env
 /server.js
