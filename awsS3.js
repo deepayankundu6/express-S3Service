@@ -23,7 +23,7 @@ const saveToS3 = async (bucketName, File) => {
                     console.log('File uploaded successfully. File location:', data.Location);
                     resolve({
                         status: 200,
-                        message: "File uploaded successfullt into S3",
+                        message: "File uploaded successfully into S3",
                         location: data.Location
                     })
                 }
@@ -33,7 +33,8 @@ const saveToS3 = async (bucketName, File) => {
     } catch (error) {
         response = {
             status: 500,
-            message: "Unable to uplaod file into S3"
+            message: "Unable to uplaod file into S3",
+            error: error.message
         }
         return response;
     }

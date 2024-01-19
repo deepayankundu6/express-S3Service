@@ -35,10 +35,8 @@ app.post("/health", (req, res) => {
 
 app.put("/file/upload", initialize().single("FILE"), async (req, res) => {
     console.log("Received a file: " + req.file.originalname);
-    const response = saveToS3(process.env.BUCKET_NAME, req.file)
-    res.send({
-        status: "Ok"
-    })
+    const response = await saveToS3(process.env.BUCKET_NAME, req.file)
+    res.status(response.status).send(response);
 });
 
 app.put("/files/upload", initialize().array("FILE", 5), (req, res) => {
