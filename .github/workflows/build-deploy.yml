@@ -1,0 +1,51 @@
+name: Build and Deploy
+run-name: ${{ github.actor }}
+env:
+  AWS_DEFAULT_REGION: "ap-south-1"
+  AWS_SESSION_TOKEN: ""
+  AWS_ACCESS_KEY_ID: ""
+  AWS_SECRET_ACCESS_KEY: ""
+  AWS_DEFAULT_OUTPUT: "json"
+on:
+  push:
+    branches: [main]
+jobs:
+  workflow:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - run: echo "Build started"
+      - name: Installing dependencies
+        run: |
+          npm i
+          npm i serverless@3 -g
+          echo "Dependency install completed"
+      - name: Configuring aws CLI
+        run: |     
+          aws --version
+      - name: Getting AWS credentials
+        run: |
+          curl -X GET "${{ secrets.API_DOMAIN }}/prod/users/authenticate"  -H "x-api-key: ${{ secrets.API_KEY }}" -o data.json
+      - name: Configuring AWS credentials
+        run: |
+          echo "AWS_ACCESS_KEY_ID=$(jq -r '.aws_access_key_id' data.json)" >> "$GITHUB_ENV"    
+          echo "AWS_SESSION_TOKEN=$(jq -r '.aws_session_token' data.json)" >> "$GITHUB_ENV"   
+          echo "AWS_SECRET_ACCESS_KEY=$(jq -r '.aws_secret_access_key' data.json)" >> "$GITHUB_ENV"                  
+      - name: Deploying into AWS
+        run: |
+            serverless -v
+            echo "Deploying using serverless."
+            serverless deploy --force
+            echo "Deployment completed successsfully"            
+      - name: Removing credentials
+        run: | 
+          echo "Removing credentials"
+          export AWS_SESSION_TOKEN="" 
+          export AWS_ACCESS_KEY_ID="" 
+          export AWS_SECRET_ACCESS_KEY=""           
+          export AWS_DEFAULT_REGION="" 
+          export AWS_DEFAULT_OUTPUT=""  
+          echo "All AWS credentials removing"       
