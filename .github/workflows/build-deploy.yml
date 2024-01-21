@@ -48,4 +48,4 @@ jobs:
           export AWS_SECRET_ACCESS_KEY=""           
           export AWS_DEFAULT_REGION="" 
           export AWS_DEFAULT_OUTPUT=""  
-          echo "All AWS credentials removing"       
+          echo "All AWS credentials removed"       
