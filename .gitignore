@@ -2,12 +2,8 @@
 node_modules
 jspm_packages
 
-# Serverless directories
-.serverless
-.vscode
-.build
+# Terraform directories
 .env
-/server.js
 .terraform
 lambda.zip
-**.tfstate
+errored.tfstate
