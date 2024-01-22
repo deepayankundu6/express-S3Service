@@ -7,3 +7,4 @@ jspm_packages
 .terraform
 lambda.zip
 errored.tfstate
+.terraform.lock.hcl
