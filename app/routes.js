@@ -30,13 +30,13 @@ app.post("/health", (req, res) => {
     })
 });
 
-app.post("/file/upload", initialize().single("file"), async (req, res) => {
+app.post("/upload/file", initialize().single("file"), async (req, res) => {
     console.log("Received a file: " + req.file.originalname);
     const response = await saveToS3(process.env.BUCKET_NAME, req.file)
     res.status(response.status).send(response);
 });
 
-app.post("/files/upload", initialize().array("files", 25), async (req, res) => {
+app.post("/upload/files", initialize().array("files", 25), async (req, res) => {
     console.log("Received files: " + req.files.reduce((prev, next) => `${prev.originalname} , ${next.originalname}`))
     let respArr = [];
     for (let file of req.files) {
