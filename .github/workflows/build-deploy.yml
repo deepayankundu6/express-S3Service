@@ -8,7 +8,7 @@ env:
   AWS_DEFAULT_OUTPUT: "json"
 on:
   push:
-    branches: [main]
+    branches: [master]
 jobs:
   workflow:
     runs-on: ubuntu-latest
