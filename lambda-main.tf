@@ -158,7 +158,7 @@ resource "aws_iam_role_policy_attachment" "lambda_basic_2" {
   role       = aws_iam_role.upload_lambda_role.name
 }
 
-# put clowd watch log
+# put cloud watch log
 resource "aws_cloudwatch_log_group" "ts_lambda_loggroup" {
   name              = "/aws/lambda/S3-upload-lambda-prod"
   retention_in_days = 30
