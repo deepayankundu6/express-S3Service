@@ -42,7 +42,7 @@ jobs:
         run: |
             echo "Deploying started."
             terraform init
-            terraofrm plan
+            terraform plan
             terraform apply -auto-approve           
             echo "Deployment completed successsfully"            
       - name: Removing credentials
@@ -52,5 +52,6 @@ jobs:
           export AWS_ACCESS_KEY_ID="" 
           export AWS_SECRET_ACCESS_KEY=""           
           export AWS_DEFAULT_REGION="" 
-          export AWS_DEFAULT_OUTPUT=""  
+          export AWS_DEFAULT_OUTPUT=""
+          rm data.json  
           echo "All AWS credentials removed"       
