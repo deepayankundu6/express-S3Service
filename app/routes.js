@@ -3,6 +3,7 @@ const multer = require("multer");
 const { saveToS3 } = require("./awsS3")
 
 const initialize = () => {
+    console.log("Initializing multer")
     const storage = multer.memoryStorage();
     return multer({
         storage,
@@ -29,13 +30,13 @@ app.post("/health", (req, res) => {
     })
 });
 
-app.put("/file/upload", initialize().single("file"), async (req, res) => {
+app.post("/file/upload", initialize().single("file"), async (req, res) => {
     console.log("Received a file: " + req.file.originalname);
     const response = await saveToS3(process.env.BUCKET_NAME, req.file)
     res.status(response.status).send(response);
 });
 
-app.put("/files/upload", initialize().array("files", 25), async (req, res) => {
+app.post("/files/upload", initialize().array("files", 25), async (req, res) => {
     console.log("Received files: " + req.files.reduce((prev, next) => `${prev.originalname} , ${next.originalname}`))
     let respArr = [];
     for (let file of req.files) {

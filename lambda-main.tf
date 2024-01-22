@@ -47,13 +47,6 @@ resource "aws_api_gateway_method" "proxy" {
   }
 }
 
-resource "aws_api_gateway_method_response" "proxy" {
-  rest_api_id = aws_api_gateway_rest_api.my_api.id
-  resource_id = aws_api_gateway_resource.gateway_path.id
-  http_method = aws_api_gateway_method.proxy.http_method
-  status_code = "200"
-}
-
 # Creating the IAM roles for lambda
 resource "aws_iam_role" "upload_lambda_role" {
   name = "upload-lambda-role"
