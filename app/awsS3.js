@@ -7,13 +7,14 @@ const saveToS3 = async (bucketName, File) => {
         Key: `my-uploads/${File.originalname}`,
         Body: File.buffer
     };
-    
+
     try {
         const command = new PutObjectCommand(params);
         const response = await client.send(command);
         return {
             status: 200,
-            message: "File uploaded successfully into S3"
+            message: "File uploaded successfully into S3",
+            response: response
         }
 
     } catch (error) {

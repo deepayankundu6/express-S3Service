@@ -44,7 +44,7 @@ app.post("/files/upload", initialize().array("files", 25), async (req, res) => {
         respArr.push(resp);
     }
     let status = respArr.every((ell) => ell.status === 200) ? 200 : 500;
-    let message = status === 200 ? "all files uploaded successfully" : "Oops some error occured while uploading some files";
+    let message = status === 200 ? "All of the files uploaded successfully" : "Oops some error occured while uploading some files";
 
     res.status(status).send({
         status: status,
