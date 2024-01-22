@@ -30,10 +30,35 @@ resource "aws_api_gateway_resource" "gateway_path" {
   path_part   = "upload-s3"
 }
 
+resource "aws_api_gateway_stage" "default" {
+  stage_name    = "prod"
+  rest_api_id   = aws_api_gateway_rest_api.my_api.id
+  deployment_id = aws_api_gateway_deployment.default.id
+}
 resource "aws_api_gateway_resource" "events_apig_resources_updatetags" {
   rest_api_id = aws_api_gateway_rest_api.my_api.id
   parent_id   = aws_api_gateway_resource.gateway_path.id
   path_part   = "{proxy+}"
+}
+
+# Creating API key for accessing the APIs
+resource "aws_api_gateway_api_key" "APIKey" {
+  name = "s3-uplaod-api-key"
+}
+
+resource "aws_api_gateway_usage_plan" "myusageplan" {
+  name = "s3-upload-usage-plan"
+
+  api_stages {
+    api_id = aws_api_gateway_rest_api.my_api.id
+    stage  = aws_api_gateway_stage.default.stage_name
+  }
+}
+
+resource "aws_api_gateway_usage_plan_key" "main" {
+  key_id        = aws_api_gateway_api_key.APIKey.id
+  key_type      = "API_KEY"
+  usage_plan_id = aws_api_gateway_usage_plan.myusageplan.id
 }
 
 resource "aws_api_gateway_method" "proxy" {
@@ -41,6 +66,11 @@ resource "aws_api_gateway_method" "proxy" {
   resource_id   = aws_api_gateway_resource.events_apig_resources_updatetags.id
   http_method   = "ANY"
   authorization = "NONE"
+  api_key_required = true
+  request_models = {
+    "application/json"    = "Error",
+    "multipart/form-data" = "Error"
+  }
 
   request_parameters = {
     "method.request.path.proxy" = true
@@ -92,12 +122,6 @@ resource "aws_api_gateway_request_validator" "updatetag_request_validator" {
   rest_api_id                 = aws_api_gateway_rest_api.my_api.id
   validate_request_body       = false
   validate_request_parameters = false
-}
-
-resource "aws_api_gateway_stage" "default" {
-  stage_name    = "prod"
-  rest_api_id   = aws_api_gateway_rest_api.my_api.id
-  deployment_id = aws_api_gateway_deployment.default.id
 }
 
 # Integrating the lambda with API gateway
