@@ -1,9 +1,7 @@
-const { S3 } = require('@aws-sdk/client-s3');
+const { PutObjectCommand, S3Client } = require('@aws-sdk/client-s3');
 
 const saveToS3 = async (bucketName, File) => {
-    const S3Agent = new S3();
     let response;
-
     const params = {
         Bucket: bucketName,
         Key: `my-uploads/${File.originalname}`,
@@ -11,20 +9,12 @@ const saveToS3 = async (bucketName, File) => {
     };
     
     try {
-        response = await new Promise((resolve, reject) => {
-            S3Agent.putObject(params, (err, data) => {
-                if (err) {
-                    console.log(`Error occured uploading file ${File.originalname}: `, err);
-                    reject(err)
-                } else {
-                    console.log('File uploaded successfully.');
-                    resolve({
-                        status: 200,
-                        message: "File uploaded successfully into S3"
-                    })
-                }
-            });
-        })
+        const command = new PutObjectCommand(params);
+        const response = await client.send(command);
+        return {
+            status: 200,
+            message: "File uploaded successfully into S3"
+        }
 
     } catch (error) {
         console.log(error);
