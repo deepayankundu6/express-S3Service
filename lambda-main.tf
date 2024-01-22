@@ -191,7 +191,7 @@ resource "aws_iam_policy" "policy" {
     Version = "2012-10-17",
     Statement = [
       {
-        Action   = "s3:PutObject",
+        Action   = "s3:Put*",
         Effect   = "Allow",
         Resource = "${aws_s3_bucket.upload_file_bucket.arn}"
       }
