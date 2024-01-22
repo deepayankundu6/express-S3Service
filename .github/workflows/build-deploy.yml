@@ -21,7 +21,11 @@ jobs:
       - name: Installing dependencies
         run: |
           npm i
-          npm i serverless@3 -g
+          npm i -g webpack-cli
+          $ wget -O- https://apt.releases.hashicorp.com/gpg | sudo gpg --dearmor -o /usr/share/keyrings/hashicorp-archive-keyring.gpg
+          $ echo "deb [signed-by=/usr/share/keyrings/hashicorp-archive-keyring.gpg] https://apt.releases.hashicorp.com $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/hashicorp.list
+          sudo apt update
+          sudo apt install terraform -y
           echo "Dependency install completed"
       - name: Configuring aws CLI
         run: |     
@@ -34,11 +38,12 @@ jobs:
           echo "AWS_ACCESS_KEY_ID=$(jq -r '.aws_access_key_id' data.json)" >> "$GITHUB_ENV"    
           echo "AWS_SESSION_TOKEN=$(jq -r '.aws_session_token' data.json)" >> "$GITHUB_ENV"   
           echo "AWS_SECRET_ACCESS_KEY=$(jq -r '.aws_secret_access_key' data.json)" >> "$GITHUB_ENV"                  
-      - name: Deploying into AWS
+      - name: Deploying function into AWS
         run: |
-            serverless -v
-            echo "Deploying using serverless."
-            serverless deploy --force
+            echo "Deploying started."
+            terraform init
+            terraofrm plan
+            terraform apply -auto-approve           
             echo "Deployment completed successsfully"            
       - name: Removing credentials
         run: | 
