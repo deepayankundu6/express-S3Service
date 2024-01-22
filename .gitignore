@@ -10,3 +10,4 @@ jspm_packages
 /server.js
 .terraform
 lambda.zip
+**.tfstate
