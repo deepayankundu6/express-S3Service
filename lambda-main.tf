@@ -75,7 +75,7 @@ resource "aws_iam_role" "upload_lambda_role" {
 # Archiveing the lamda code and deploying it
 data "archive_file" "lambda_package" {
   type        = "zip"
-  source_file = "${path.module}/app"
+  source_dir = "${path.module}/app"
   output_path = "${path.module}/lambda.zip"
 }
 
