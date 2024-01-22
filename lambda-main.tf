@@ -61,11 +61,22 @@ resource "aws_api_gateway_usage_plan_key" "main" {
   usage_plan_id = aws_api_gateway_usage_plan.myusageplan.id
 }
 
-resource "aws_api_gateway_method" "proxy" {
-  rest_api_id   = aws_api_gateway_rest_api.my_api.id
-  resource_id   = aws_api_gateway_resource.events_apig_resources_updatetags.id
-  http_method   = "ANY"
-  authorization = "NONE"
+resource "aws_api_gateway_method" "proxy_get" {
+  rest_api_id      = aws_api_gateway_rest_api.my_api.id
+  resource_id      = aws_api_gateway_resource.events_apig_resources_updatetags.id
+  http_method      = "GET"
+  authorization    = "NONE"
+  api_key_required = true
+  request_parameters = {
+    "method.request.path.proxy_get" = true
+  }
+}
+
+resource "aws_api_gateway_method" "proxy_post" {
+  rest_api_id      = aws_api_gateway_rest_api.my_api.id
+  resource_id      = aws_api_gateway_resource.events_apig_resources_updatetags.id
+  http_method      = "POST"
+  authorization    = "NONE"
   api_key_required = true
   request_models = {
     "application/json"    = "Error",
@@ -73,7 +84,7 @@ resource "aws_api_gateway_method" "proxy" {
   }
 
   request_parameters = {
-    "method.request.path.proxy" = true
+    "method.request.path.proxy_post" = true
   }
 }
 
@@ -125,21 +136,33 @@ resource "aws_api_gateway_request_validator" "updatetag_request_validator" {
 }
 
 # Integrating the lambda with API gateway
-resource "aws_api_gateway_integration" "lambda_integration" {
+resource "aws_api_gateway_integration" "lambda_integration_get" {
   rest_api_id             = aws_api_gateway_rest_api.my_api.id
   resource_id             = aws_api_gateway_resource.events_apig_resources_updatetags.id
-  http_method             = aws_api_gateway_method.proxy.http_method
+  http_method             = aws_api_gateway_method.proxy_get.http_method
+  integration_http_method = "GET"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.file_upload_lambda.invoke_arn
+}
+
+resource "aws_api_gateway_integration" "lambda_integration_post" {
+  rest_api_id             = aws_api_gateway_rest_api.my_api.id
+  resource_id             = aws_api_gateway_resource.events_apig_resources_updatetags.id
+  http_method             = aws_api_gateway_method.proxy_post.http_method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
   uri                     = aws_lambda_function.file_upload_lambda.invoke_arn
 }
 
+
 resource "aws_api_gateway_deployment" "default" {
   rest_api_id = aws_api_gateway_rest_api.my_api.id
 
   depends_on = [
-    aws_api_gateway_method.proxy,
-    aws_api_gateway_integration.lambda_integration
+    aws_api_gateway_method.proxy_post,
+    aws_api_gateway_integration.lambda_integration_post,
+    aws_api_gateway_method.proxy_get,
+    aws_api_gateway_integration.lambda_integration_get
   ]
   lifecycle {
     create_before_destroy = true

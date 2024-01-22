@@ -10,6 +10,7 @@ const saveToS3 = async (bucketName, File) => {
 
     try {
         const command = new PutObjectCommand(params);
+        const client = new S3Client();
         const response = await client.send(command);
         return {
             status: 200,
