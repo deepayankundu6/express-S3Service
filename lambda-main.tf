@@ -82,7 +82,6 @@ resource "aws_api_gateway_method" "proxy_post" {
     "application/json"    = "Error",
     "multipart/form-data" = "Error"
   }
-
   request_parameters = {
     "method.request.path.proxy_post" = true
   }
